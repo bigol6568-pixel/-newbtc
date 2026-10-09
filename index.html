@@ -3,22 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NewBTC - 21M Supply Free Mining</title>
+<title>New Bitcoin - 21M Supply</title>
 <style>
 body{margin:0;background:#0f0f0f;color:#fff;font-family:Arial;text-align:center}
-.header{padding:20px;background:#111}
 .card{background:#1c1c1c;border:1px solid #f7931a;border-radius:20px;padding:20px;margin:15px;max-width:420px;margin-left:auto;margin-right:auto}
 .btc{font-size:36px;font-weight:bold;color:#f7931a}
 .balance{font-size:34px;color:#00ff88;font-weight:bold;margin:10px 0}
 button{width:100%;padding:18px;border-radius:30px;border:none;background:#f7931a;color:#fff;font-size:20px;font-weight:bold}
 .info{color:#aaa;font-size:14px;margin-top:10px}
+.wallet-box{font-size:11px;color:#888;word-break:break-all;background:#111;padding:10px;border-radius:10px;margin-top:10px}
 </style>
 </head>
 <body>
-<div class="header">
 <h2 style="color:#f7931a">🟠 New Bitcoin</h2>
 <p>21M Supply - Mineable - No Liquidity - Fair Launch</p>
-</div>
 
 <div class="card">
 <p>Total Supply: 21,000,000 NEWBTC</p>
@@ -26,24 +24,32 @@ button{width:100%;padding:18px;border-radius:30px;border:none;background:#f7931a
 <p>Your Mined NEWBTC</p>
 <button id="btn" onclick="mine()">START MINING ⛏️</button>
 <p id="live" class="info"></p>
-<p class="info">Rate: 0.05 NEWBTC / Hour - 100% FREE - No Gas Fee</p>
+<p class="info">Rate: 0.05 NEWBTC / Hour - 100% FREE</p>
 </div>
 
 <div class="card">
-<p>💼 Wallet: <span id="wal">Not Connected</span></p>
-<button onclick="conn()" style="background:#333;font-size:14px;padding:12px">Connect Wallet</button>
+<p>💼 Owner / Treasury Wallet:</p>
+<div class="wallet-box">0xb1399926419a2769681Ac2E0c092aB3D11aCdB00</div>
+<p id="userWal" style="margin-top:10px;color:#f7931a">Your Wallet: 0xb139...dB00 Connected ✅</p>
+<button onclick="changeWallet()" style="background:#333;font-size:14px;padding:12px;margin-top:10px">Change Wallet</button>
 </div>
 
 <script>
+let ownerWallet = "0xb1399926419a2769681Ac2E0c092aB3D11aCdB00";
 let base = parseFloat(localStorage.getItem('newbtc_bal')||0);
 let mining = localStorage.getItem('newbtc_mining')==='1';
 let st = parseInt(localStorage.getItem('newbtc_st')||0);
-function conn(){
- let a=prompt("0x wallet address paste karo:");
- if(a){localStorage.setItem('newbtc_wallet',a); document.getElementById('wal').innerText=a.slice(0,6)+'...'+a.slice(-4)}
+
+// default wallet save
+if(!localStorage.getItem('newbtc_wallet')){
+  localStorage.setItem('newbtc_wallet', ownerWallet);
 }
-let w=localStorage.getItem('newbtc_wallet');
-if(w)document.getElementById('wal').innerText=w.slice(0,6)+'...'+w.slice(-4);
+
+function changeWallet(){
+ let a=prompt("New wallet address paste karo:", localStorage.getItem('newbtc_wallet'));
+ if(a){localStorage.setItem('newbtc_wallet',a); location.reload();}
+}
+
 function mine(){
  if(mining){
   let earn=(Date.now()-st)/3600000*0.05;
@@ -51,7 +57,7 @@ function mine(){
   localStorage.setItem('newbtc_bal',base);
   localStorage.setItem('newbtc_mining','0');
   mining=false;
-  alert("Claimed "+earn.toFixed(8)+" NEWBTC");
+  alert("✅ Claimed "+earn.toFixed(8)+" NEWBTC");
  }else{
   st=Date.now();localStorage.setItem('newbtc_st',st);localStorage.setItem('newbtc_mining','1');mining=true;
  }
