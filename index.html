@@ -5,13 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>New Bitcoin - 21M Supply</title>
 <style>
-body{margin:0;background:#0f0f0f;color:#fff;font-family:Arial;text-align:center}
-.card{background:#1c1c1c;border:1px solid #f7931a;border-radius:20px;padding:20px;margin:15px;max-width:420px;margin-left:auto;margin-right:auto}
-.btc{font-size:36px;font-weight:bold;color:#f7931a}
-.balance{font-size:34px;color:#00ff88;font-weight:bold;margin:10px 0}
-button{width:100%;padding:18px;border-radius:30px;border:none;background:#f7931a;color:#fff;font-size:20px;font-weight:bold}
-.info{color:#aaa;font-size:14px;margin-top:10px}
-.wallet-box{font-size:11px;color:#888;word-break:break-all;background:#111;padding:10px;border-radius:10px;margin-top:10px}
+body{margin:0;background:#0a0a0a;color:#fff;font-family:Arial;text-align:center;padding:10px}
+.card{background:#1c1c1c;border:1px solid #f7931a;border-radius:20px;padding:20px;margin:15px auto;max-width:420px}
+.btc{font-size:38px;font-weight:bold;color:#f7931a}
+.balance{font-size:36px;color:#00ff88;font-weight:bold;margin:10px 0}
+button{width:100%;padding:16px;border-radius:30px;border:none;background:#f7931a;color:#fff;font-size:18px;font-weight:bold;margin-top:10px}
+.btn2{background:#222;border:1px solid #444}
+.info{color:#aaa;font-size:13px;margin-top:10px}
+.wallet-box{font-size:11px;color:#f7931a;word-break:break-all;background:#111;padding:10px;border-radius:10px;margin-top:8px;border:1px solid #333}
 </style>
 </head>
 <body>
@@ -24,14 +25,17 @@ button{width:100%;padding:18px;border-radius:30px;border:none;background:#f7931a
 <p>Your Mined NEWBTC</p>
 <button id="btn" onclick="mine()">START MINING ⛏️</button>
 <p id="live" class="info"></p>
-<p class="info">Rate: 0.05 NEWBTC / Hour - 100% FREE</p>
+<p class="info">Rate: 0.05 NEWBTC / Hour - 100% FREE - No Gas Fee</p>
+<button class="btn2" onclick="withdraw()">💸 WITHDRAW (Min 1.0 NEWBTC)</button>
 </div>
 
 <div class="card">
-<p>💼 Owner / Treasury Wallet:</p>
+<p>💼 Treasury / Owner Wallet</p>
 <div class="wallet-box">0xb1399926419a2769681Ac2E0c092aB3D11aCdB00</div>
-<p id="userWal" style="margin-top:10px;color:#f7931a">Your Wallet: 0xb139...dB00 Connected ✅</p>
-<button onclick="changeWallet()" style="background:#333;font-size:14px;padding:12px;margin-top:10px">Change Wallet</button>
+<p id="userWal" style="margin-top:12px;color:#00ff88">Your Wallet: Loading...</p>
+<p style="font-size:12px;color:#888;margin-top:15px">🔗 Your Referral Link:</p>
+<div class="wallet-box" id="refLink" style="color:#fff"></div>
+<button class="btn2" style="font-size:14px;padding:10px" onclick="copyRef()">Copy Referral Link</button>
 </div>
 
 <script>
@@ -40,14 +44,21 @@ let base = parseFloat(localStorage.getItem('newbtc_bal')||0);
 let mining = localStorage.getItem('newbtc_mining')==='1';
 let st = parseInt(localStorage.getItem('newbtc_st')||0);
 
-// default wallet save
 if(!localStorage.getItem('newbtc_wallet')){
   localStorage.setItem('newbtc_wallet', ownerWallet);
 }
+let myWallet = localStorage.getItem('newbtc_wallet');
+document.getElementById('userWal').innerText = "Your Wallet: " + myWallet.slice(0,6) + "..." + myWallet.slice(-4) + " ✅";
 
-function changeWallet(){
- let a=prompt("New wallet address paste karo:", localStorage.getItem('newbtc_wallet'));
- if(a){localStorage.setItem('newbtc_wallet',a); location.reload();}
+let ref = window.location.origin + window.location.pathname + "?ref=" + myWallet;
+document.getElementById('refLink').innerText = ref;
+
+function copyRef(){ navigator.clipboard.writeText(ref); alert("Referral Copied!"); }
+
+function withdraw(){
+ let bal = parseFloat(document.getElementById('bal').innerText);
+ if(bal < 1){ alert("Minimum 1 NEWBTC needed! Keep mining. Your balance: " + bal.toFixed(8)); return; }
+ alert("Withdraw Request Sent!\nAmount: "+bal.toFixed(8)+" NEWBTC\nTo: "+myWallet+"\n\nOwner will send after mainnet launch!");
 }
 
 function mine(){
@@ -57,7 +68,6 @@ function mine(){
   localStorage.setItem('newbtc_bal',base);
   localStorage.setItem('newbtc_mining','0');
   mining=false;
-  alert("✅ Claimed "+earn.toFixed(8)+" NEWBTC");
  }else{
   st=Date.now();localStorage.setItem('newbtc_st',st);localStorage.setItem('newbtc_mining','1');mining=true;
  }
@@ -66,11 +76,11 @@ function upd(){
  let d=base;
  if(mining){
   let e=(Date.now()-st)/3600000*0.05; d+=e;
-  document.getElementById('btn').innerText="STOP & CLAIM";
+  document.getElementById('btn').innerText="STOP & CLAIM ⏹️";
   document.getElementById('live').innerText="Mining Live: +"+e.toFixed(8);
  }else{
   document.getElementById('btn').innerText="START MINING ⛏️";
-  document.getElementById('live').innerText="Click to start free mining";
+  document.getElementById('live').innerText="Paused - Click to resume";
  }
  document.getElementById('bal').innerText=d.toFixed(8);
 }
