@@ -1,24 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>New BTC Mining</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NewBTC - 21M Supply Free Mining</title>
 <style>
-body{background:#0a0a0a;color:#fff;text-align:center;font-family:Arial;padding:20px}
-h1{color:#f7931a}
-button{padding:16px 32px;background:#f7931a;color:#fff;border:none;border-radius:12px;font-size:20px;font-weight:bold}
-.box{margin-top:20px;border:1px solid #333;padding:20px;border-radius:12px;background:#111}
+body{margin:0;background:#0f0f0f;color:#fff;font-family:Arial;text-align:center}
+.header{padding:20px;background:#111}
+.card{background:#1c1c1c;border:1px solid #f7931a;border-radius:20px;padding:20px;margin:15px;max-width:420px;margin-left:auto;margin-right:auto}
+.btc{font-size:36px;font-weight:bold;color:#f7931a}
+.balance{font-size:34px;color:#00ff88;font-weight:bold;margin:10px 0}
+button{width:100%;padding:18px;border-radius:30px;border:none;background:#f7931a;color:#fff;font-size:20px;font-weight:bold}
+.info{color:#aaa;font-size:14px;margin-top:10px}
 </style>
 </head>
 <body>
-<h1>New Bitcoin</h1>
-<p>21M Supply | Mineable | No Presale | Fair Launch</p>
-<button onclick="alert('Contract deploy ke baad mining start hogi!')">START MINING</button>
-<div class="box">
-<p>Contract: Deploy ke baad yahan address ayega</p>
-<p>Status: Ready to Mine</p>
-<p>Reward: 50 nBTC per block</p>
+<div class="header">
+<h2 style="color:#f7931a">🟠 New Bitcoin</h2>
+<p>21M Supply - Mineable - No Liquidity - Fair Launch</p>
 </div>
+
+<div class="card">
+<p>Total Supply: 21,000,000 NEWBTC</p>
+<div class="btc" id="bal">0.00000000</div>
+<p>Your Mined NEWBTC</p>
+<button id="btn" onclick="mine()">START MINING ⛏️</button>
+<p id="live" class="info"></p>
+<p class="info">Rate: 0.05 NEWBTC / Hour - 100% FREE - No Gas Fee</p>
+</div>
+
+<div class="card">
+<p>💼 Wallet: <span id="wal">Not Connected</span></p>
+<button onclick="conn()" style="background:#333;font-size:14px;padding:12px">Connect Wallet</button>
+</div>
+
+<script>
+let base = parseFloat(localStorage.getItem('newbtc_bal')||0);
+let mining = localStorage.getItem('newbtc_mining')==='1';
+let st = parseInt(localStorage.getItem('newbtc_st')||0);
+function conn(){
+ let a=prompt("0x wallet address paste karo:");
+ if(a){localStorage.setItem('newbtc_wallet',a); document.getElementById('wal').innerText=a.slice(0,6)+'...'+a.slice(-4)}
+}
+let w=localStorage.getItem('newbtc_wallet');
+if(w)document.getElementById('wal').innerText=w.slice(0,6)+'...'+w.slice(-4);
+function mine(){
+ if(mining){
+  let earn=(Date.now()-st)/3600000*0.05;
+  base+=earn;
+  localStorage.setItem('newbtc_bal',base);
+  localStorage.setItem('newbtc_mining','0');
+  mining=false;
+  alert("Claimed "+earn.toFixed(8)+" NEWBTC");
+ }else{
+  st=Date.now();localStorage.setItem('newbtc_st',st);localStorage.setItem('newbtc_mining','1');mining=true;
+ }
+}
+function upd(){
+ let d=base;
+ if(mining){
+  let e=(Date.now()-st)/3600000*0.05; d+=e;
+  document.getElementById('btn').innerText="STOP & CLAIM";
+  document.getElementById('live').innerText="Mining Live: +"+e.toFixed(8);
+ }else{
+  document.getElementById('btn').innerText="START MINING ⛏️";
+  document.getElementById('live').innerText="Click to start free mining";
+ }
+ document.getElementById('bal').innerText=d.toFixed(8);
+}
+setInterval(upd,500);upd();
+</script>
 </body>
 </html>
