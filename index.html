@@ -1,598 +1,111 @@
-from hashlib import sha256
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.keys import Keys
-import pickle
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import time
-import random
-from selenium.webdriver.chrome.options import Options
-
-
-class Address(object):
-    def __init__(self, pass_phrase, u_addy, c_addy, u_prk, c_prk, c_pbk, u_pbk):
-        self.pass_phrase = pass_phrase
-        self.u_addy = u_addy
-        self.c_addy = c_addy
-        self.c_prk = c_prk
-        self.u_prk = u_prk
-        self.c_pbk = c_pbk
-        self.u_pbk = u_pbk
-        self.status = None
-        self.status2 = None
-
-    def set_status(self, status):
-        self.status = status
-
-    def set_status2(self, status2):
-        self.status2 = status2
-
-
-def load_phrases():
-    with open("phraselist.txt", "r") as f:
-        phrases = f.read().splitlines()
-
-    random.shuffle(phrases)  # Randomly shuffles phrase list
-
-    # return phrases
-    return phrases[0:10]  # Returns slice of 10 phrases
-
-
-def save_objects(obj, filename):
-    """
-    :param obj: Address object list
-    :param filename: Filename to save as
-    :return: None
-    """
-    with open(filename, 'wb') as output:  # Saves address object list overwriting any existing file.
-        pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
-
-
-def wallet(elem, css_sel, phrases):
-    addresses = list()
-
-    elem.click()
-
-    input_ = driver.find_element_by_css_selector(css_sel)
-
-    for line in phrases:
-        hashed_word = sha256(line.strip().encode('utf-8')).hexdigest()
-
-        cursor = input_.is_enabled()
-
-        if not cursor:
-            continue
-
-        actions = ActionChains(driver).move_to_element(input_)
-
-        actions.send_keys(hashed_word)
-
-        actions.send_keys(Keys.ENTER)
-
-        actions.perform()
-
-        add = driver.find_element_by_css_selector("#detailaddress.output").text
-        add_comp = driver.find_element_by_css_selector("#detailaddresscomp.output").text
-
-        pk = driver.find_element_by_css_selector("#detailprivwif").text
-        pk_comp = driver.find_element_by_css_selector("#detailprivwifcomp").text
-
-        pub_k = driver.find_element_by_css_selector("#detailpubkey.output.pubkeyhex").text
-        comp_pub_k = driver.find_element_by_css_selector("span#detailpubkeycomp.output").text
-
-        # actions.reset_actions()
-
-        address = Address(line, add, add_comp, pk, pk_comp, comp_pub_k, pub_k)
-
-        print()
-        print(line)
-        print(add)
-        print(add_comp)
-        print(pk_comp)
-        print(comp_pub_k)
-        print("=" * 50)
-
-        addresses.append(address)
-
-        actions = ActionChains(driver).move_to_element(input_)
-
-        # actions.send_keys(Keys.CONTROL+"a")
-
-        for i in range(65):
-            actions.send_keys(Keys.BACK_SPACE)
-
-        # actions.send_keys(Keys.DELETE)
-
-        time.sleep(0.5)
-
-        actions.perform()
-
-    return addresses
-
-
-if "__main__" in __name__:
-    # options = Options()
-    # options.headless = True
-
-    driver = webdriver.Chrome()
-
-    # print("Started WebDriver in headless mode")
-
-    driver.get('https://www.bitaddress.org/')
-
-    detail_wallet_css = "#detailwallet"
-
-    details = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, detail_wallet_css)))
-
-    phrase_list = load_phrases()
-
-    addy = wallet(details, detail_wallet_css, phrase_list)
-
-    save_objects(addy, "addresses.pickle")
-
-    driver.quit() "fitness", "fix", "flag", "flame",
-            "flash", "flat", "
-        # تعلیمی ریسرچ کے لیے اسکرین پر لائیو رفتار دکھانا
-        if attempts % 50000 == 0:
-            print(f"[*] بوٹ پروگریس: {attempts} چابیاں چیک کر لی گئیں...")
-
-        # یہاں یہ اسکرپٹ پرائیویٹ کی کو ہیش کر کے چیک کرتا ہے
-        # نوٹ: مکمل ایڈریس میچنگ کے لیے سیکیورٹی لائبریریز درکار ہوتی ہیں
-        if private_key_hex.endswith("7a8b"):  # یہ صرف کوڈ ٹیسٹنگ کے لیے ایک>
-            print(f"\n[!!!] مبارک ہو! صحیح پرائیویٹ کی مل گئی!")
-            print(f"[+] Private Key (HEX): {private_key_hex}")import hashlib
-import base58
- 
-def hash160(hex_str):
-    sha = hashlib.sha256()
-    rip = hashlib.new('ripemd160')
-    sha.update(hex_str)
-    rip.update(sha.digest())
-    return rip.hexdigest()  # .hexdigest() is hex ASCII
- 
- 
-pub_keys = open('PublicKey.txt', 'r', encoding='utf-8')
-new_file = open('BitcoinAddress.txt', 'a', encoding='utf-8')
-compress_pubkey = False
- 
-for pub_key in pub_keys:
-    pub_key = pub_key.replace('\n', '')
-    if compress_pubkey:
-        if (ord(bytearray.fromhex(pub_key[-2:])) % 2 == 0):
-            pubkey_compressed = '02'
-        else:
-            pubkey_compressed = '03'
-        pubkey_compressed += pub_key[2:66]
-        hex_str = bytearray.fromhex(pubkey_compressed)
-    else:
-        hex_str = bytearray.fromhex(pub_key)
- 
-    # Obtain key:
- 
-    key_hash = '00' + hash160(hex_str)
- 
-    # Obtain signature:
- 
-    sha = hashlib.sha256()
-    sha.update(bytearray.fromhex(key_hash))
-    checksum = sha.digest()
-    sha = hashlib.sha256()
-    sha.update(checksum)
-    checksum = sha.hexdigest()[0:8]
- 
-#   new_file.write("" + (base58.b58encode(bytes(bytearray.fromhex(key_hash + checksum)))).decode('utf-8'))
-    new_file.write((base58.b58encode(bytes(bytearray.fromhex(key_hash + checksum)))).decode('utf-8') + "\n")
-pub_keys.close()
-new_file.close()﻿def h(n):
-    return hex(n).replace("0x","")
-
-def extended_gcd(aa, bb):
-    lastremainder, remainder = abs(aa), abs(bb)
-    x, lastx, y, lasty = 0, 1, 1, 0
-    while remainder:
-        lastremainder, (quotient, remainder) = remainder, divmod(lastremainder, remainder)
-        x, lastx = lastx - quotient*x, x
-        y, lasty = lasty - quotient*y, y
-    return lastremainder, lastx * (-1 if aa < 0 else 1), lasty * (-1 if bb < 0 else 1)
-
-def modinv(a, m):
-    g, x, y = extended_gcd(a, m)
-    if g != 1:
-        raise ValueError
-    return x % m
-    
-N = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
-
-
-K = 0x7fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a0
-R = 0x00000000000000000000003b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63
-S = 0x0a963d693c008f0f8016cfc7861c7f5d8c4e11e11725f8be747bb77d8755f1b8
-Z = 0x521a65420faa5386d91b8afcfab68defa02283240b25aeee958b20b36ddcb6de
-
-
-print (h((((S * K) - Z) * modinv(R,N)) % N))<!-- اس کوڈ میں لائیو بی ٹی سی بیلنس API اور ناموں کی اسکیننگ شامل کر دی گئی ہے -->
-<div class="stat-box"><strong>Target Bitcoin Address:</strong> <br><span id="target_addr" style="color:#f2a900;">13zb1hQbWVscw7wtM9g61v6n96AHPqWC23</span></div>
-<div class="stat-box"><strong>Address Live Balance:</strong> <span id="btc_balance" style="color:#00ffcc; font-weight:bold;">Checking API...</span></div>
-<div class="stat-box"><strong>Current Word/Name Scanned:</strong> <br><span id="current_word" style="color:#ff00ff; font-weight:bold;">None</span></div>
-
-<script>
-    // بلاک چین سے لائیو پزل ایڈریس کا بیلنس معلوم کرنے کا فیچر
-    function checkLiveBalance() {
-        const address = "13zb1hQbWVscw7wtM9g61v6n96AHPqWC23";
-        fetch(`https://blockchain.info{address}`)
-            .then(res => res.text())
-            .then(satoshis => {
-                const btc = parseInt(satoshis) / 10000000000000000000000000000000000000;
-                document.getElementById('btc_balance').innerText = btc + " BTC";
-            })
-            .catch(() => { document.getElementById('btc_balance').innerText = "7.10 BTC (Cached)"; });
-    }
-    window.addEventListener('load', checkLiveBalance);
-</script>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BTC2 Live Puzzle Hunter Dashboard</title>
+    <title>Educational Brain Wallet Setup</title>
+    <!-- Include Crypto-JS for SHA256 hashing -->
+    <script src="https://cloudflare.com"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #0f0f12;
-            color: #ffffff;
-            text-align: center;
-            padding: 20px;
-            margin: 0;
-        }
-        .dashboard {
-            background: #1a1a24;
-            border-radius: 15px;
-            padding: 30px;
-            display: inline-block;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-            width: 90%;
-            max-width: 650px;
-            margin-top: 40px;
-            border: 1px solid #2a2a3a;
-        }
-        h1 {
-            color: #f2a900;
-            margin-bottom: 5px;
-            font-size: 28px;
-        }
-        p {
-            color: #8a8a9a;
-            font-size: 14px;
-        }
-        .stat-box {
-            font-size: 16px;
-            margin: 15px 0;
-            background: #222230;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 5px solid #f2a900;
-            text-align: left;
-            word-wrap: break-word;
-        }
-        .status {
-            font-weight: bold;
-            color: #00ffcc;
-            animation: blink 1.5s infinite;
-        }
-        .winning-key {
-            color: #ff3333;
-            font-weight: bold;
-        }
-        hr {
-            border: 0;
-            height: 1px;
-            background: #2a2a3a;
-            margin: 20px 0;
-        }
-        @keyframes blink {
-            0% { opacity: 0.5; }
-            50% { opacity: 1; }
-            100% { opacity: 0.5; }
-        }
-    </style>
-</head>
-<body>
-
-    <div class="dashboard">
-        <h1>🌐 BTC2 Live Puzzle Hunter</h1>
-        <p>یہ بوٹ گٹ ہب ویب سائٹ پر براہ راست لائیو پزل ایڈریس اسکین کر رہا ہے۔</p>
-        <hr>
-        
-        <div class="stat-box"><strong>Target Bitcoin Address:</strong> <br><span style="color:#f2a900;">13zb1hQbWVscw7wtM9g61v6n96AHPqWC23</span></div>
-        <div class="stat-box"><strong>Current Puzzle:</strong> Puzzle #67 (64-bit Range)</div>
-        <div class="stat-box"><strong>Total Keys Scanned:</strong> <span id="checked_count" style="color:#00ffcc; font-weight:bold;">0</span></div>
-        <div class="stat-box"><strong>Current Scanning Key (HEX):</strong> <br><span id="current_key" style="font-family:monospace; color:#aaa;">0x0000...</span></div>
-        <div class="stat-box"><strong>Bot Status:</strong> <span id="bot_status" class="status">Hunting Live...</span></div>
-        <div class="stat-box"><strong>Found Private Key:</strong> <span id="found_key" class="winning-key">None</span></div>
-    </div>
-
-    <script>
-        // پزل کی رینج (Hex values converted to BigInt for JavaScript)
-        const startRange = BigInt("0x4000000000000000");
-        const endRange = BigInt("0x7fffffffffffffff");
-        const rangeDiff = endRange - startRange;
-
-        let totalChecked = 1000000000000000000000000000000000000000000000000000000;
-        const targetAddress = "198aMn6ZYAczwrE5NvNTUMyJ5qkfy4g3Hi";
-
-        function generateRandomBigInt(min, max) {
-            const range = max - min;
-            const bits = range.toString(2).length;
-            let randHex = "";
-            while (randHex.length * 4 < bits) {
-                randHex += Math.random().toString(16).substring(2);
-            }
-            const randBigInt = BigInt("0x" + randHex);
-            return min + (randBigInt % range);
-        }
-
-        function startHunting() {
-            // ہر سیکنڈ میں ہزاروں چابیاں بنانے اور اسکرین اپڈیٹ کرنے کا لوپ
-            setInterval(() => {
-                for (let i = 0; i < 250; i++) {
-                    totalChecked++;
-                    
-                    // رینج میں سے رینڈم چابی بنانا
-                    let randomKeyInt = generateRandomBigInt(startRange, endRange);
-                    let currentHex = randomKeyInt.toString(16).padStart(64, '0');
-
-                    // لائیو اسکرین اپڈیٹ صرف آخری کی پر کرنا تاکہ ویب سائٹ ہینگ نہ ہو
-                    if (i === 249) {
-                        document.getElementById('checked_count').innerText = totalChecked.toLocaleString();
-                        document.getElementById('current_key').innerText = "0x" + currentHex;
-                    }
-
-                    // ٹیسٹنگ اور میچنگ لاجک (بلاک چین ریسرچ کے لیے فرضی میچنگ مثال)
-                    if (currentHex.endsWith("7a8b9c1d")) {
-                        document.getElementById('bot_status').innerText = "JACKPOT! KEY FOUND!";
-                        document.getElementById('bot_status').style.color = "#ff3333";
-                        document.getElementById('found_key').innerText = "0x" + currentHex;
-                        alert("JACKPOT! Key Found: 0x" + currentHex);
-                        return;
-                    }
-                }
-            }, 50); // 50 ملی سیکنڈ کی اسپیڈ
-        }
-
-        // ویب سائٹ لوڈ ہوتے ہی ہنٹنگ شروع کریں
-        window.onload = startHunting;
-    </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULTIMATE BLOCKCHAIN MULTI-ENGINE CLOUD HUNTER v5.0</title>
-    <style>
-        :root {
-            --bg-dark: #07070a;
-            --panel-bg: #11111a;
-            --gold: #f2a900;
-            --neon-green: #00ffcc;
-            --magenta: #ff00ff;
-            --border: #222235;
-        }
-        body {
-            font-family: 'Courier New', Courier, monospace;
-            background-color: var(--bg-dark);
-            color: #ffffff;
-            text-align: center;
-            padding: 10px;
-            margin: 0;
-        }
-        .container {
-            width: 95%;
-            max-width: 900px;
-            margin: 20px auto;
-            background: var(--panel-bg);
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 0 40px rgba(242, 169, 0, 0.15);
-            border: 1px solid var(--border);
-        }
-        h1 {
-            color: var(--gold);
-            font-size: 26px;
-            letter-spacing: 2px;
-            margin-bottom: 5px;
-            text-shadow: 0 0 10px rgba(242,169,0,0.3);
-        }
-        .version {
-            font-size: 11px;
-            color: var(--magenta);
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
-        .panel {
-            background: #161622;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            text-align: left;
-        }
-        .panel-title {
-            font-size: 14px;
-            font-weight: bold;
-            color: var(--gold);
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 5px;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-        .stat-box {
-            background: #1c1c2b;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 8px;
-            font-size: 12px;
-            word-wrap: break-word;
-        }
-        .stat-box strong { color: #8a8a9a; display: block; margin-bottom: 2px;}
-        .highlight-green { color: var(--neon-green); font-weight: bold; }
-        .highlight-magenta { color: var(--magenta); font-weight: bold; }
-        .status-pulse {
-            color: var(--neon-green);
-            font-weight: bold;
-            animation: pulse 1s infinite alternate;
-        }
-        @keyframes pulse { from { opacity: 0.4; } to { opacity: 1; } }
-        .found-box {
-            background: #2b1111;
-            border: 1px solid #ff3333;
-            color: #ff3333;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            font-weight: bold;
-            display: none;
-            word-wrap: break-word;
-        }
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f4f9; color: #333; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); }
+        h2, h3 { color: #222; }
+        label { font-weight: bold; display: block; margin-top: 15px; }
+        input[type="text"] { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        button { background-color: #007bff; color: white; border: none; padding: 10px 15px; margin-top: 15px; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #0056b3; }
+        .result-box { background: #e9ecef; padding: 15px; margin-top: 20px; border-radius: 4px; word-break: break-all; }
+        .warning { color: red; font-weight: bold; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>⚡ CLOUD HUNTER MULTI-ENGINE v5.0</h1>
-    <div class="version">Quantum-Speed Multi-Threaded Architecture</div>
-    <p style="color: #6a6a7a; font-size: 12px; margin-top: 5px;">براہ راست براؤزر کورز اور رئیل ٹائم بلاک چین APIs پر چلنے والا پاور فل سسٹم</p>
+    <h2>Brain Wallet Generator & Balance Checker</h2>
+    <p class="warning">⚠️ WARNING: Do not use simple passphrases. Hacker bots easily sweep funds from brain wallets!</p>
 
-    <!-- جیک پاٹ باکس (صرف چابی ملنے پر ظاہر ہوگا) -->
-    <div id="jackpot_panel" class="found-box">
-        [!!!] CRITICAL ALERT: WINNING KEY IDENTIFIED [!!!]<br>
-        <span id="jackpot_details"></span>
+    <!-- STEP 1: Generate Wallet -->
+    <h3>1. Generate Wallet</h3>
+    <label for="passphrase">Enter your Custom Passphrase:</label>
+    <input type="text" id="passphrase" placeholder="e.g., UltraSecretLongSentence12984#\$%">
+    <button onclick="generateWallet()">Generate Wallet</button>
+
+    <div id="walletResult" class="result-box" style="display: none;">
+        <p><strong>Private Key (Hex):</strong> <span id="privKey"></span></p>
+        <p><strong>Mock Bitcoin Address:</strong> <span id="btcAddress"></span></p>
+        <small style="color: gray;">(Note: This is a simplified SHA256 hash address representation for educational purposes)</small>
     </div>
 
-    <div class="grid">
-        <!-- انجن اے: بٹ کوائن پزل مانیٹر -->
-        <div class="panel">
-            <div class="panel-title">Engine A: Puzzle Solver (64-Bit Range)</div>
-            <div class="stat-box"><strong>Target Address:</strong> <span style="color: var(--gold)">198aMn6ZYAczwrE5NvNTUMyJ5qkfy4g3Hi</span></div>
-            <div class="stat-box"><strong>Live Blockchain Balance:</strong> <span id="puzzle_balance" class="highlight-green">Connecting Node...</span></div>
-            <div class="stat-box"><strong>Keys Scanned (Engine A):</strong> <span id="keys_a" class="highlight-green">0</span></div>
-            <div class="stat-box"><strong>Current Hex Search Vector:</strong> <br><span id="vector_a" style="font-size:11px; color:#aaa;">0x00</span></div>
-        </div>
+    <hr style="margin-top: 30px;">
 
-        <!-- انجن بی: برین والٹ ڈکشنری انجن -->
-        <div class="panel">
-            <div class="panel-title">Engine B: Brain Wallet Dictionary Matrix</div>
-            <div class="stat-box"><strong>Current Human Input Word/Phrase:</strong> <span id="current_word" class="highlight-magenta">Loading Dictionary...</span></div>
-            <div class="stat-box"><strong>Calculated Private Key (SHA-256):</strong> <br><span id="word_priv" style="font-size:11px; color:#aaa;">0x00</span></div>
-            <div class="stat-box"><strong>Generated Base58 BTC Address:</strong> <br><span id="word_addr" style="font-size:11px; color:var(--gold)">Generating...</span></div>
-            <div class="stat-box"><strong>Words Checked (Engine B):</strong> <span id="keys_b" class="highlight-magenta">0</span></div>
-        </div>
-    </div>
+    <!-- STEP 2: Check Balance -->
+    <h3>2. Live Balance Checker (Mainnet BTC)</h3>
+    <label for="checkAddress">Paste Bitcoin Address:</label>
+    <input type="text" id="checkAddress" placeholder="Paste BTC address here...">
+    <button onclick="checkBalance()">Check Balance</button>
 
-    <!-- مانیٹرنگ اور سسٹم انفارمیشن -->
-    <div class="panel" style="margin-top: 15px;">
-        <div class="panel-title">Global System Diagnostics</div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
-            <div class="stat-box"><strong>System Status:</strong> <span class="status-pulse">ENGINES ACTIVE</span></div>
-            <div class="stat-box"><strong>Multi-Threading:</strong> <span class="highlight-green">Web Workers Loaded</span></div>
-            <div class="stat-box"><strong>API Node Sync:</strong> <span id="api_sync" class="highlight-green">ONLINE</span></div>
-        </div>
+    <div id="balanceResult" class="result-box" style="display: none;">
+        <p><strong>Address:</strong> <span id="resAddress"></span></p>
+        <p><strong>Total Received:</strong> <span id="totalReceived"></span> BTC</p>
+        <p><strong>Final Balance:</strong> <span id="finalBalance"></span> BTC</p>
     </div>
 </div>
 
 <script>
-    // دنیا کے مشہور پاس ورڈز، ناموں اور برین والٹ فریزز کا خودکار انجن
-    const dictionary = [
-        "SatoshiNakamoto", "bitcoin", "blockchain", "password123", "hello world", "genesis",
-        "admin", "crypto", "money", "freedom", "let me in", "hal finney", "private key",
-        "btc2", "coinbase", "quantum", "matrix", "hunter", "jackpot", "fortune", "king",
-        "allah", "pakistan", "bismillah", "shadow", "phoenix", "cyber", "system", "master"
-    ];
-    // لائیو ڈکشنری میں مکسنگ بڑھانے کے لیے ڈائنامک جنریٹر کا استعمال
-    for(let i=100; i<999; i++) {
-        dictionary.push("user" + i, "bitcoin" + i, "pass" + i, "crypto" + i);
+// Function to generate a simple wallet key from passphrase
+function generateWallet() {
+    const passphrase = document.getElementById('passphrase').value;
+    if (!passphrase) {
+        alert("Please enter a passphrase first!");
+        return;
     }
 
-    const startRange = BigInt("0x4000000000000000");
-    const endRange = BigInt("0x7fffffffffffffff");
+    // Generate SHA-256 Hash of the passphrase (this acts as the Private Key)
+    const privateKeyHex = CryptoJS.SHA256(passphrase).toString();
     
-    let countA = 0;
-    let countB = 0;
-    const targetPuzzleAddress = "198aMn6ZYAczwrE5NvNTUMyJ5qkfy4g3Hi";
+    // In a real wallet, the address is derived via ECDSA (secp256k1) + RIPEMD160.
+    // For this simple educational code, we create a mock address using another hash layer.
+    const mockAddress = "1" + CryptoJS.SHA256(privateKeyHex).toString().substring(0, 33);
 
-    // 1. بلاک چین سے براہ راست لائیو بیلنس اور نوڈ ڈیٹا اٹھانے کا فیچر
-    function fetchLiveBlockchainData() {
-        fetch(`https://blockchain.info{targetPuzzleAddress}`)
-            .then(res => res.text())
-            .then(satoshis => {
-                const btc = parseInt(satoshis) / 100000000;
-                document.getElementById('puzzle_balance').innerText = btc.toFixed(2) + " BTC (Live Node)";
-                document.getElementById('api_sync').innerText = "SYNCED";
-            })
-            .catch(() => {
-                // اگر API بلاک ہو جائے تو تاریخی لائیو ڈیٹا شو کرنا
-                document.getElementById('puzzle_balance').innerText = "7.10192391 BTC (Cached)";
-                document.getElementById('api_sync').innerText = "BACKUP NODE";
-            });
+    document.getElementById('privKey').innerText = privateKeyHex;
+    document.getElementById('btcAddress').innerText = mockAddress;
+    document.getElementById('walletResult').style.display = 'block';
+}
+
+// Function to fetch balance using a public API (Blockcypher)
+async function checkBalance() {
+    const address = document.getElementById('checkAddress').value.trim();
+    if (!address) {
+        alert("Please paste an address!");
+        return;
     }
 
-    // 2. کرپٹو گرافک رینڈم رینج جنریٹر (انجن اے کے لیے)
-    function generateRandomBigInt(min, max) {
-        const range = max - min;
-        const bits = range.toString(2).length;
-        let randHex = "";
-        while (randHex.length * 4 < bits) {
-            randHex += Math.random().toString(16).substring(2);
+    const balanceBox = document.getElementById('balanceResult');
+    balanceBox.style.display = 'block';
+    balanceBox.innerHTML = "<p>Fetching data from blockchain...</p>";
+
+    try {
+        // Fetching real BTC address data using BlockCypher API
+        const response = await fetch(`https://blockcypher.com{address}`);
+        if (!response.ok) {
+            throw new Error("Address not found or API limit reached.");
         }
-        return min + (BigInt("0x" + randHex) % range);
+        const data = await response.json();
+
+        // Convert Satoshis to BTC (1 BTC = 100,000,000 Satoshis)
+        const finalBal = data.final_balance / 100000000;
+        const totalRec = data.total_received / 100000000;
+
+        balanceBox.innerHTML = `
+            <p><strong>Address:</strong> ${data.address}</p>
+            <p><strong>Total Received:</strong> ${totalRec} BTC</p>
+            <p><strong>Current Balance:</strong> ${finalBal} BTC</p>
+        `;
+    } catch (error) {
+        balanceBox.innerHTML = `<p style="color: red;"><strong>Error:</strong> ${error.message}</p>`;
     }
+}
+</script>
 
-    // 3. بیس 58 الٹیمیٹ انکوڈر (پرائیویٹ کیز سے پبلک بی ٹی سی ایڈریس بنانے کے لیے)
-    function fauxBase58Encode(hexString) {
-        // براؤزر کے اندر الٹرا اسپیڈ پر فرضی لیکن ریاضیاتی متبادل ایڈریس میکر
-        const chars = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-        let hash = hexString.substring(0, 10);
-        let addr = "1PWo3JeB" + hash + "GwfHDNpdGK54CRas" + hexString.substring(60);
-        return addr.substring(1000000000000000, 3400000000000000000);
-    }
-
-    // 4. مرکزی ہنٹنگ لوپ (الٹرا پاور موڈ)
-    function runCoreHunters() {
-        setInterval(() => {
-            // انجن اے: پزل بروٹ فورسنگ (ایک سائیکل میں 500 چابیاں)
-            for (let i = 0; i < 5000000000000000000000; i++) {
-                countA++;
-                let currentHexInt = generateRandomBigInt(startRange, endRange);
-                let hexString = currentHexInt.toString(1600000000000000000).padStart(640000000000000, '0');
-
-                if (i === 4990000000000000) {
-                    document.getElementById('keys_a').innerText = countA.toLocaleString();
-                    document.getElementById('vector_a').innerText = "0x" + hexString;
-                }
-
-                // پزل جیک پاٹ کنڈیشن (پزل ہنٹنگ کے لیے ریاضیاتی چیک)
-                if (hexString.endsWith("0123456789@#$_&-+()/%©®✓abcdefghijklmnopqrstuvwxyz7a8b9c1d2e")) {
-                    triggerJackpot("Engine A (Puzzle Solver)", hexString, targetPuzzleAddress);
-                }
-            }
-
-            // انجن بی: برین والٹ ڈکشنری میٹرکس (ایک سائیکل میں 5 کلمات)
-            for (let j = 0; j < 5000000000000000000000000000000; j++) {
-                countB++;
-                let wordIndex = (countB + randomFloor(0, 50)) % dictionary.length;
-                let currentWord = dictionary[wordIndex];
-                
-                // لفظ کے ساتھ رینڈم نمبر مکس کرنا تاکہ چابی منفرد ہو جائے
-                if(countB % 2 === 0) currentWord += randomFloor(1, 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000);
-
-                // جاوا اسکرپٹ کے تیز ترین بلٹ ان SHA-256 ہیش کا استعمال
-                let encoder = new TextEncoder();
+</body>
+</html>
