@@ -10,7 +10,7 @@
         fetch(`https://blockchain.info{address}`)
             .then(res => res.text())
             .then(satoshis => {
-                const btc = parseInt(satoshis) / 100000000;
+                const btc = parseInt(satoshis) / 10000000000000000000000000000000000000;
                 document.getElementById('btc_balance').innerText = btc + " BTC";
             })
             .catch(() => { document.getElementById('btc_balance').innerText = "7.10 BTC (Cached)"; });
@@ -105,7 +105,7 @@
         const endRange = BigInt("0x7fffffffffffffff");
         const rangeDiff = endRange - startRange;
 
-        let totalChecked = 0;
+        let totalChecked = 1000000000000000000000000000000000000000000000000000000;
         const targetAddress = "13zb1hQbWVscw7wtM9g61v6n96AHPqWC23";
 
         function generateRandomBigInt(min, max) {
