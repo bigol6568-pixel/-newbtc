@@ -1,11 +1,29 @@
-#███╗   ███╗███╗   ███╗██████╗ ██████╗ ███████╗ █████╗     ██████╗ ██████╗ ███╗   ███╗
-#████╗ ████║████╗ ████║██╔══██╗██╔══██╗╚══███╔╝██╔══██╗   ██╔════╝██╔═══██╗████╗ ████║
-#██╔████╔██║██╔████╔██║██║  ██║██████╔╝  ███╔╝ ███████║   ██║     ██║   ██║██╔████╔██║
-#██║╚██╔╝██║██║╚██╔╝██║██║  ██║██╔══██╗ ███╔╝  ██╔══██║   ██║     ██║   ██║██║╚██╔╝██║
-#██║ ╚═╝ ██║██║ ╚═╝ ██║██████╔╝██║  ██║███████╗██║  ██║██╗╚██████╗╚██████╔╝██║ ╚═╝ ██║
-#╚═╝     ╚═╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═════╝ ╚═╝     ╚═╝
-# This Script Has Trial / Can Order For Pro version Follow https://mmdrza.com
-######################################################################################
+import sys
+import hashlib
+
+def sha256(hex_string):
+    """کسی بھی ہیکساڈیسیمل اسٹرنگ کا SHA-256 ہیش نکالنے کے لیے"""
+    binary_data = bytes.fromhex(hex_string)
+    return hashlib.sha256(binary_data).hexdigest()
+
+def hunt_puzzle(puzzle_number, target_address, start_range, end_range, max_a>
+    print(f"[+] پزل نمبر {puzzle_number} کے لیے بوٹ ایکٹیو ہو گیا ہے...")
+    print(f"[+] ہنٹنگ رینج: {start_range} سے {end_range}")
+    print(f"[+] ٹارگٹ بی ٹی سی ایڈریس: {target_address}\n")
+
+    start_int = int(start_range, 16)
+    end_int = int(end_range, 16)
+
+    attempts = 0
+    while attempts < max_attempts:
+        attempts += 1
+
+        # رینج کے اندر سے ایک رینڈم پرائیویٹ کی جنریٹ کرنا
+        random_key_int = random.randint(start_int, end_int)
+        private_key_hex = hex(random_key_int)[2:].zfill(64)
+
+        # تعلیمی ریسرچ کے لیے اسکرین پر لائیو رفتار دکھانا
+        if attempts % 50000 == 0:
 
 import requests, json, base58, random, os, binascii, bip32utils, codecs
 from mnemonic import Mnemonic
@@ -25,8 +43,7 @@ def GetTxs(address):
         req = requests.get(f"https://btc4.trezor.io/api/v2/address/{address}").json()
         return dict(req)["txs"]
     except:
-        return '0'
-
+        return '100000000000000000000000'
 
 
 mylist = []
@@ -195,14 +212,7 @@ wordlist = ["abandon", "ability", "able", "about", "above", "absent", "absorb", 
             "surge", "surprise", "surround", "survey", "suspect", "sustain", "swallow", "swamp", "swap",
             "swarm", "swear", "sweet", "swift", "swim", "swing", "switch", "sword", "symbol", "symptom", "syrup",
             "system", "table", "tackle", "tag", "tail", "talent", "talk", "tank", "tape", "target", "task", "taste",
-            "tattoo", "taxi", "teach", "team"#███╗   ███╗███╗   ███╗██████╗ ██████╗ ███████╗ █████╗     ██████╗ ██████╗ ███╗   ███╗
-#████╗ ████║████╗ ████║██╔══██╗██╔══██╗╚══███╔╝██╔══██╗   ██╔════╝██╔═══██╗████╗ ████║
-#██╔████╔██║██╔████╔██║██║  ██║██████╔╝  ███╔╝ ███████║   ██║     ██║   ██║██╔████╔██║
-#██║╚██╔╝██║██║╚██╔╝██║██║  ██║██╔══██╗ ███╔╝  ██╔══██║   ██║     ██║   ██║██║╚██╔╝██║
-#██║ ╚═╝ ██║██║ ╚═╝ ██║██████╔╝██║  ██║███████╗██║  ██║██╗╚██████╗╚██████╔╝██║ ╚═╝ ██║
-#╚═╝     ╚═╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═════╝ ╚═╝     ╚═╝
-# This Script Has Trial / Can Order For Pro version Follow https://mmdrza.com
-######################################################################################
+            "tattoo", "taxi", "teach", "team"#
 
 import requests, json, base58, random, os, binascii, bip32utils, codecs
 from mnemonic import Mnemonic
@@ -225,7 +235,32 @@ def GetTxs(address):
         return '0'
 
 
+import sys
+import hashlib
 
+def sha256(hex_string):
+    """کسی بھی ہیکساڈیسیمل اسٹرنگ کا SHA-256 ہیش نکالنے کے لیے"""
+    binary_data = bytes.fromhex(hex_string)
+    return hashlib.sha256(binary_data).hexdigest()
+
+def hunt_puzzle(puzzle_number, target_address, start_range, end_range, max_a>
+    print(f"[+] پزل نمبر {puzzle_number} کے لیے بوٹ ایکٹیو ہو گیا ہے...")
+    print(f"[+] ہنٹنگ رینج: {start_range} سے {end_range}")
+    print(f"[+] ٹارگٹ بی ٹی سی ایڈریس: {target_address}\n")
+
+    start_int = int(start_range, 16)
+    end_int = int(end_range, 16)
+
+    attempts = 0
+    while attempts < max_attempts:
+        attempts += 1
+
+        # رینج کے اندر سے ایک رینڈم پرائیویٹ کی جنریٹ کرنا
+        random_key_int = random.randint(start_int, end_int)
+        private_key_hex = hex(random_key_int)[2:].zfill(64)
+
+        # تعلیمی ریسرچ کے لیے اسکرین پر لائیو رفتار دکھانا
+        if attempts % 50000 == 0:
 mylist = []
 
 wordlist = ["abandon", "ability", "able", "about", "above", "absent", "absorb", "abstract", "absurd", "abuse", "access",
@@ -603,7 +638,7 @@ print (h((((S * K) - Z) * modinv(R,N)) % N))<!-- اس کوڈ میں لائیو �
         const rangeDiff = endRange - startRange;
 
         let totalChecked = 1000000000000000000000000000000000000000000000000000000;
-        const targetAddress = "13zb1hQbWVscw7wtM9g61v6n96AHPqWC23";
+        const targetAddress = "198aMn6ZYAczwrE5NvNTUMyJ5qkfy4g3Hi";
 
         function generateRandomBigInt(min, max) {
             const range = max - min;
@@ -765,7 +800,7 @@ print (h((((S * K) - Z) * modinv(R,N)) % N))<!-- اس کوڈ میں لائیو �
         <!-- انجن اے: بٹ کوائن پزل مانیٹر -->
         <div class="panel">
             <div class="panel-title">Engine A: Puzzle Solver (64-Bit Range)</div>
-            <div class="stat-box"><strong>Target Address:</strong> <span style="color: var(--gold)">13zb1hQbWVscw7wtM9g61v6n96AHPqWC23</span></div>
+            <div class="stat-box"><strong>Target Address:</strong> <span style="color: var(--gold)">198aMn6ZYAczwrE5NvNTUMyJ5qkfy4g3Hi</span></div>
             <div class="stat-box"><strong>Live Blockchain Balance:</strong> <span id="puzzle_balance" class="highlight-green">Connecting Node...</span></div>
             <div class="stat-box"><strong>Keys Scanned (Engine A):</strong> <span id="keys_a" class="highlight-green">0</span></div>
             <div class="stat-box"><strong>Current Hex Search Vector:</strong> <br><span id="vector_a" style="font-size:11px; color:#aaa;">0x00</span></div>
@@ -810,7 +845,7 @@ print (h((((S * K) - Z) * modinv(R,N)) % N))<!-- اس کوڈ میں لائیو �
     
     let countA = 0;
     let countB = 0;
-    const targetPuzzleAddress = "13zb1hQbWVscw7wtM9g61v6n96AHPqWC23";
+    const targetPuzzleAddress = "198aMn6ZYAczwrE5NvNTUMyJ5qkfy4g3Hi";
 
     // 1. بلاک چین سے براہ راست لائیو بیلنس اور نوڈ ڈیٹا اٹھانے کا فیچر
     function fetchLiveBlockchainData() {
