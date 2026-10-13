@@ -1,4 +1,73 @@
-<!DOCTYPE html>
+import hashlib
+import ecdsa
+import os
+
+# Apni marzi ka naam se address banana - Vanity Address
+def create_custom_address(custom_name="VKT"):
+    """
+    custom_name: Jo naam chahiye, jaise 'VKT', 'MANGA', 'BTC'
+    """
+    print(f"Searching for address starting with {custom_name}...")
+    attempts = 0
+    while True:
+        attempts += 1
+        # Naya private key
+        private_key = os.urandom(32)
+        sk = ecdsa.SigningKey.from_string(private_key, curve=ecdsa.SECP256k1)
+        vk = sk.get_verifying_key()
+        public_key = b'\x04' + vk.to_string()
+        
+        # Address banao (apke BTC2.0 ke style me)
+        sha = hashlib.sha256(public_key).digest()
+        ripemd = hashlib.new('ripemd160', sha).digest()
+        address = ripemd.hex()  # Simplified - aapke chain ke liye
+        
+        # Check karo kya custom naam se milta hai
+        # Hum address ko hex se custom prefix check karenge
+        # Agar apko BTC1qVKT... jaisa chahiye to vanity logic yahan lagega
+        if custom_name.lower() in address[:8].lower() or attempts % 100 == 0:
+            # Asli BTC style address
+            extended = b'\x00' + ripemd
+            sha2 = hashlib.sha256(hashlib.sha256(extended).digest()).digest()[:4]
+            final_address = (extended + sha2).hex()
+            
+            # Agar custom name match karna hai to simple: naam + address
+            vanity_address = f"{custom_name}_{final_address[:10]}"
+            
+            if custom_name.lower() in final_address.lower() or attempts > 500:
+                return {
+                    "private_key": private_key.hex(),
+                    "public_key": public_key.hex(),
+                    "address": f"BTC2_{custom_name}_{final_address[:16]}",
+                    "full_address": final_address,
+                    "attempts": attempts
+                }
+        
+        if attempts > 10000:  # Zyada time na le
+            break
+
+# Balance check function
+def get_balance(address, blockchain):
+    """
+    blockchain: apki blockchain instance
+    address: jiska balance check karna hai
+    """
+    balance = 0
+    for block in blockchain.chain:
+        for tx in block.transactions:
+            # Aapke transaction.py ke hisab se
+            if hasattr(tx, 'receiver') and tx.receiver == address:
+                balance += tx.amount
+            if hasattr(tx, 'sender') and tx.sender == address:
+                balance -= tx.amount
+    
+    # Pending transactions bhi check karo
+    if hasattr(blockchain, 'pending_transactions'):
+        for tx in blockchain.pending_transactions:
+            if hasattr(tx, 'receiver') and tx.receiver == address:
+                balance += tx.amount
+    
+    return balance<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
