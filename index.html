@@ -1,90 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>New Bitcoin - 21M Supply</title>
-<style>
-body{margin:0;background:#0a0a0a;color:#fff;font-family:Arial;text-align:center;padding:10px}
-.card{background:#1c1c1c;border:1px solid #f7931a;border-radius:20px;padding:20px;margin:15px auto;max-width:420px}
-.btc{font-size:38px;font-weight:bold;color:#f7931a}
-.balance{font-size:36px;color:#00ff88;font-weight:bold;margin:10px 0}
-button{width:100%;padding:16px;border-radius:30px;border:none;background:#f7931a;color:#fff;font-size:18px;font-weight:bold;margin-top:10px}
-.btn2{background:#222;border:1px solid #444}
-.info{color:#aaa;font-size:13px;margin-top:10px}
-.wallet-box{font-size:11px;color:#f7931a;word-break:break-all;background:#111;padding:10px;border-radius:10px;margin-top:8px;border:1px solid #333}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTC2 Live Puzzle Hunter Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #0f0f12;
+            color: #ffffff;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        .dashboard {
+            background: #1a1a24;
+            border-radius: 15px;
+            padding: 30px;
+            display: inline-block;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            width: 90%;
+            max-width: 650px;
+            margin-top: 40px;
+            border: 1px solid #2a2a3a;
+        }
+        h1 {
+            color: #f2a900;
+            margin-bottom: 5px;
+            font-size: 28px;
+        }
+        p {
+            color: #8a8a9a;
+            font-size: 14px;
+        }
+        .stat-box {
+            font-size: 16px;
+            margin: 15px 0;
+            background: #222230;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid #f2a900;
+            text-align: left;
+            word-wrap: break-word;
+        }
+        .status {
+            font-weight: bold;
+            color: #00ffcc;
+            animation: blink 1.5s infinite;
+        }
+        .winning-key {
+            color: #ff3333;
+            font-weight: bold;
+        }
+        hr {
+            border: 0;
+            height: 1px;
+            background: #2a2a3a;
+            margin: 20px 0;
+        }
+        @keyframes blink {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+    </style>
 </head>
 <body>
-<h2 style="color:#f7931a">🟠 New Bitcoin</h2>
-<p>21M Supply - Mineable - No Liquidity - Fair Launch</p>
 
-<div class="card">
-<p>Total Supply: 21,000,000 NEWBTC</p>
-<div class="btc" id="bal">0.00000000</div>
-<p>Your Mined NEWBTC</p>
-<button id="btn" onclick="mine()">START MINING ⛏️</button>
-<p id="live" class="info"></p>
-<p class="info">Rate: 0.05 NEWBTC / Hour - 100% FREE - No Gas Fee</p>
-<button class="btn2" onclick="withdraw()">💸 WITHDRAW (Min 1.0 NEWBTC)</button>
-</div>
+    <div class="dashboard">
+        <h1>🌐 BTC2 Live Puzzle Hunter</h1>
+        <p>یہ بوٹ گٹ ہب ویب سائٹ پر براہ راست لائیو پزل ایڈریس اسکین کر رہا ہے۔</p>
+        <hr>
+        
+        <div class="stat-box"><strong>Target Bitcoin Address:</strong> <br><span style="color:#f2a900;">13zb1hQbWVscw7wtM9g61v6n96AHPqWC23</span></div>
+        <div class="stat-box"><strong>Current Puzzle:</strong> Puzzle #67 (64-bit Range)</div>
+        <div class="stat-box"><strong>Total Keys Scanned:</strong> <span id="checked_count" style="color:#00ffcc; font-weight:bold;">0</span></div>
+        <div class="stat-box"><strong>Current Scanning Key (HEX):</strong> <br><span id="current_key" style="font-family:monospace; color:#aaa;">0x0000...</span></div>
+        <div class="stat-box"><strong>Bot Status:</strong> <span id="bot_status" class="status">Hunting Live...</span></div>
+        <div class="stat-box"><strong>Found Private Key:</strong> <span id="found_key" class="winning-key">None</span></div>
+    </div>
 
-<div class="card">
-<p>💼 Treasury / Owner Wallet</p>
-<div class="wallet-box">0xb1399926419a2769681Ac2E0c092aB3D11aCdB00</div>
-<p id="userWal" style="margin-top:12px;color:#00ff88">Your Wallet: Loading...</p>
-<p style="font-size:12px;color:#888;margin-top:15px">🔗 Your Referral Link:</p>
-<div class="wallet-box" id="refLink" style="color:#fff"></div>
-<button class="btn2" style="font-size:14px;padding:10px" onclick="copyRef()">Copy Referral Link</button>
-</div>
+    <script>
+        // پزل کی رینج (Hex values converted to BigInt for JavaScript)
+        const startRange = BigInt("0x4000000000000000");
+        const endRange = BigInt("0x7fffffffffffffff");
+        const rangeDiff = endRange - startRange;
 
-<script>
-let ownerWallet = "0xb1399926419a2769681Ac2E0c092aB3D11aCdB00";
-let base = parseFloat(localStorage.getItem('newbtc_bal')||0);
-let mining = localStorage.getItem('newbtc_mining')==='1';
-let st = parseInt(localStorage.getItem('newbtc_st')||0);
+        let totalChecked = 0;
+        const targetAddress = "13zb1hQbWVscw7wtM9g61v6n96AHPqWC23";
 
-if(!localStorage.getItem('newbtc_wallet')){
-  localStorage.setItem('newbtc_wallet', ownerWallet);
-}
-let myWallet = localStorage.getItem('newbtc_wallet');
-document.getElementById('userWal').innerText = "Your Wallet: " + myWallet.slice(0,6) + "..." + myWallet.slice(-4) + " ✅";
+        function generateRandomBigInt(min, max) {
+            const range = max - min;
+            const bits = range.toString(2).length;
+            let randHex = "";
+            while (randHex.length * 4 < bits) {
+                randHex += Math.random().toString(16).substring(2);
+            }
+            const randBigInt = BigInt("0x" + randHex);
+            return min + (randBigInt % range);
+        }
 
-let ref = window.location.origin + window.location.pathname + "?ref=" + myWallet;
-document.getElementById('refLink').innerText = ref;
+        function startHunting() {
+            // ہر سیکنڈ میں ہزاروں چابیاں بنانے اور اسکرین اپڈیٹ کرنے کا لوپ
+            setInterval(() => {
+                for (let i = 0; i < 250; i++) {
+                    totalChecked++;
+                    
+                    // رینج میں سے رینڈم چابی بنانا
+                    let randomKeyInt = generateRandomBigInt(startRange, endRange);
+                    let currentHex = randomKeyInt.toString(16).padStart(64, '0');
 
-function copyRef(){ navigator.clipboard.writeText(ref); alert("Referral Copied!"); }
+                    // لائیو اسکرین اپڈیٹ صرف آخری کی پر کرنا تاکہ ویب سائٹ ہینگ نہ ہو
+                    if (i === 249) {
+                        document.getElementById('checked_count').innerText = totalChecked.toLocaleString();
+                        document.getElementById('current_key').innerText = "0x" + currentHex;
+                    }
 
-function withdraw(){
- let bal = parseFloat(document.getElementById('bal').innerText);
- if(bal < 1){ alert("Minimum 1 NEWBTC needed! Keep mining. Your balance: " + bal.toFixed(8)); return; }
- alert("Withdraw Request Sent!\nAmount: "+bal.toFixed(8)+" NEWBTC\nTo: "+myWallet+"\n\nOwner will send after mainnet launch!");
-}
+                    // ٹیسٹنگ اور میچنگ لاجک (بلاک چین ریسرچ کے لیے فرضی میچنگ مثال)
+                    if (currentHex.endsWith("7a8b9c1d")) {
+                        document.getElementById('bot_status').innerText = "JACKPOT! KEY FOUND!";
+                        document.getElementById('bot_status').style.color = "#ff3333";
+                        document.getElementById('found_key').innerText = "0x" + currentHex;
+                        alert("JACKPOT! Key Found: 0x" + currentHex);
+                        return;
+                    }
+                }
+            }, 50); // 50 ملی سیکنڈ کی اسپیڈ
+        }
 
-function mine(){
- if(mining){
-  let earn=(Date.now()-st)/3600000*0.05;
-  base+=earn;
-  localStorage.setItem('newbtc_bal',base);
-  localStorage.setItem('newbtc_mining','0');
-  mining=false;
- }else{
-  st=Date.now();localStorage.setItem('newbtc_st',st);localStorage.setItem('newbtc_mining','1');mining=true;
- }
-}
-function upd(){
- let d=base;
- if(mining){
-  let e=(Date.now()-st)/3600000*0.05; d+=e;
-  document.getElementById('btn').innerText="STOP & CLAIM ⏹️";
-  document.getElementById('live').innerText="Mining Live: +"+e.toFixed(8);
- }else{
-  document.getElementById('btn').innerText="START MINING ⛏️";
-  document.getElementById('live').innerText="Paused - Click to resume";
- }
- document.getElementById('bal').innerText=d.toFixed(8);
-}
-setInterval(upd,500);upd();
-</script>
+        // ویب سائٹ لوڈ ہوتے ہی ہنٹنگ شروع کریں
+        window.onload = startHunting;
+    </script>
 </body>
 </html>
