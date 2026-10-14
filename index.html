@@ -5,7 +5,7 @@ import ecdsa
 import base58
 
 # ===== YAHAN APNA FAVORITE LIKHO =====
-TARGET = "A1A11"  # Aapka favorite, jaise 198aMn6ZYAczwrE5NvNTUMyJ5qkfy4g3Hi
+TARGET = "A1A11"  # Aapka favorite, jaise A1A786
 # =====================================
 
 def private_key_to_address(private_key_hex):
@@ -17,7 +17,7 @@ def private_key_to_address(private_key_hex):
     sha256 = hashlib.sha256(public_key).digest()
     ripemd = hashlib.new('ripemd160', sha256).digest()
     # A1A Address
-    address = "A1A" + ripemd.hex()[:33].upper()
+    address = "A1A" + ripemd.hex()[:30].upper()
     return address
 
 def private_key_to_wif(private_key_hex):
@@ -46,4 +46,10 @@ while True:
         print(f"Address (A1A): {addr}")
         print(f"Private Key (Hex): {priv_hex}")
         print(f"Private Key (WIF - 2009 Style): {wif}")
-        print(f"Try: {count} | Time
+        print(f"Try: {count} | Time: {int(time.time()-start)} sec")
+        print(f"===================================")
+        print("\nYe WIF ko aap Core Wallet me import kar sakte ho. Isi pe payment ayegi aur system pe record hoga.")
+        break
+
+    if count % 1000 == 0:
+        print(f"{count} checked... {addr}")
