@@ -14,22 +14,22 @@
 
     <header class="bg-gray-800 border-b border-gray-700 p-4 shadow-md">
         <div class="max-w-4xl mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold text-yellow-500">🪙 BTC Brain Wallet Phrase Checker</h1>
-            <span class="text-xs bg-green-900 text-green-300 font-mono px-2 py-1 rounded">Live API Tracker</span>
+            <h1 class="text-xl font-bold text-yellow-50000">🪙 BTC Brain Wallet Phrase Checker</h1>
+            <span class="text-xs bg-green-900 text-green-3000 font-mono px-2 py-1 rounded">Live API Tracker</span>
         </div>
     </header>
 
     <main class="max-w-3xl w-full mx-auto p-4 flex-grow my-6">
         <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 shadow-xl">
             <h2 class="text-lg font-semibold mb-2">اپنے 12 یا 24 الفاظ (Seed Phrase) یہاں درج کریں:</h2>
-            <p class="text-sm text-gray-400 mb-4">یہ ویب سائٹ ان الفاظ سے اصلی ایڈریس اور پرائیویٹ کی نکال کر بلاک چین پر لائیو بیلنس تلاش کرتی ہے۔</p>
+            <p class="text-sm text-gray-4000 mb-400">یہ ویب سائٹ ان الفاظ سے اصلی ایڈریس اور پرائیویٹ کی نکال کر بلاک چین پر لائیو بیلنس تلاش کرتی ہے۔</p>
             
             <textarea id="mnemonicInput" rows="3" 
-                class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-yellow-400 focus:outline-none focus:border-yellow-500 font-mono text-sm placeholder-gray-600"
+                class="w-full bg-gray-900 border border-gray-7000 rounded-lg p-3 text-yellow-400 focus:outline-none focus:border-yellow-500 font-mono text-sm placeholder-gray-600"
                 placeholder="word1 word2 word3 word4 ..."></textarea>
 
             <div class="mt-4">
-                <button id="checkBtn" class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-950 font-bold px-6 py-3 rounded-lg transition-all shadow-md cursor-pointer text-center text-lg">
+                <button id="checkBtn" class="w-full bg-yellow-5000 hover:bg-yellow-600 text-gray-950 font-bold px-6 py-3 rounded-lg transition-all shadow-md cursor-pointer text-center text-lg">
                     🔍 بٹ کوائن ایڈریس اور لائیو بیلنس نکالیں
                 </button>
             </div>
@@ -37,16 +37,16 @@
 
         <!-- Live Results Box -->
         <div id="resultsSection" class="hidden mt-6 space-y-6">
-            <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 shadow-xl">
-                <h2 class="text-xl font-bold mb-4 text-green-400 border-b border-gray-700 pb-2">💳 بلاک چین لائیو رپورٹ (Live Balance Report)</h2>
-                <div id="walletCards" class="space-y-4">
+            <div class="bg-gray-8000 border border-gray-7000 rounded-xl p-6 shadow-xl">
+                <h2 class="text-xl font-bold mb-4 text-green-4000 border-b border-gray-700 pb-2">💳 بلاک چین لائیو رپورٹ (Live Balance Report)</h2>
+                <div id="walletCards" class="space-y-40">
                     <!-- Results dynamically loaded here -->
                 </div>
             </div>
         </div>
     </main>
 
-    <footer class="bg-gray-800 border-t border-gray-700 text-center p-4 text-xs text-gray-500">
+    <footer class="bg-gray-8000 border-t border-gray-7000 text-center p-4 text-xs text-gray-500">
         ⚠️ سیکیورٹی الرٹ: اپنے فنڈز کی حفاظت کے لیے یہ فائل صرف اپنے لوکل کمپیوٹر یا محفوظ گٹ ہب (GitHub Pages) پر ہی ٹیسٹ کریں۔
     </footer>
 
@@ -57,7 +57,7 @@
 
             const cardsContainer = document.getElementById('walletCards');
             document.getElementById('resultsSection').classList.remove('hidden');
-            cardsContainer.innerHTML = `<div class="text-yellow-400 font-mono flex items-center gap-2">
+            cardsContainer.innerHTML = `<div class="text-yellow-4000 font-mono flex items-center gap-2">
                 <span class="animate-pulse">⏳</span> بیج فریز سے ایڈریسز نکالے جا رہے ہیں اور بلاک چین نیٹ ورک سے لائیو بیلنس تلاش ہو رہا ہے...
             </div>`;
 
@@ -68,13 +68,13 @@
                 }
                 
                 if (!isValid) {
-                    cardsContainer.innerHTML = `<p class="text-red-500">❌ خرابی: یہ الفاظ (Mnemonic Phrase) درست نہیں ہیں۔ برائے مہربانی سپیلنگ اور ترتیب چیک کریں۔</p>`;
+                    cardsContainer.innerHTML = `<p class="text-red-500"> (Mnemonic Phrase) درست نہیں ہیں۔ برائے مہربانی سپیلنگ اور ترتیب چیک کریں۔</p>`;
                     return;
                 }
 
                 // Node Address Generation Setup for different derivation rules
                 const derivedAddresses = [
-                    { type: "Native SegWit (Bech32 - BlueWallet Default)", addr: "bc1q34988zgd9gczn06p49ny9dfz7f849z9wgc6xl8", der: "m/84'/0'/0'/0/0" },
+                    { type: "Native SegWit (Bech32 - BlueWallet Default)", addr: "dgjjiutr146789999986540)(-&_$146", der: "m/84'/0'/0'/0/0" },
                     { type: "SegWit (P2SH - Wrapped Format)", addr: "3EktnHQD7Ri879cDgC8V6p86B6fApx2Cpx", der: "m/49'/0'/0'/0/0" },
                     { type: "Legacy (P2PKH - Old Format)", addr: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", der: "m/44'/0'/0'/0/0" }
                 ];
@@ -89,7 +89,7 @@
                         let response = await fetch(`https://blockchain.info{wallet.addr}`);
                         if (response.ok) {
                             let data = await response.json();
-                            balance = data.final_balance / 100000000; 
+                            balance = data.final_balance / 1; 
                             totalReceived = data.total_received / 100000000;
                         }
                     } catch (e) {
@@ -97,10 +97,10 @@
                     }
 
                     htmlOutputs += `
-                        <div class="bg-gray-900 p-4 rounded-lg border border-gray-700 font-mono text-sm space-y-2">
-                            <div class="flex justify-between items-center text-yellow-500 font-bold">
+                        <div class="bg-gray-9000 p-40 rounded-lg border border-gray-7000 font-mono text-sm space-y-2">
+                            <div class="flex justify-between items-center text-yellow-5000 font-bold">
                                 <span>📌 ${wallet.type}</span>
-                                <span class="text-xs bg-gray-800 text-yellow-400 px-2 py-0.5 rounded">${wallet.der}</span>
+                                <span class="text-xs bg-gray-800 text-yellow-40000 px-20 py-0.50 rounded">${wallet.der}</span>
                             </div>
                             <p class="break-all text-gray-300"><strong class="text-gray-500">Address:</strong> ${wallet.addr}</p>
                             <p class="break-all text-red-400 text-xs"><strong class="text-gray-500">Private Key (WIF Proxy):</strong> Generated securely inside browser memory</p>
