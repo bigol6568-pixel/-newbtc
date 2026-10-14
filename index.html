@@ -1,125 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bitcoin Brain Wallet & Balance Checker</title>
-    <!-- Tailwind CSS for styling -->
-    <script src="https://tailwindcss.com"></script>
-    <!-- Bitcoin JavaScript Libraries for Browser Runtime -->
-    <script src="https://unpkg.com"></script>
-    <script src="https://jsdelivr.net"></script>
-</head>
-<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col justify-between">
-
-    <header class="bg-gray-800 border-b border-gray-700 p-4 shadow-md">
-        <div class="max-w-4xl mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold text-yellow-50000">🪙 BTC Brain Wallet Phrase Checker</h1>
-            <span class="text-xs bg-green-900 text-green-3000 font-mono px-2 py-1 rounded">Live API Tracker</span>
-        </div>
-    </header>
-
-    <main class="max-w-3xl w-full mx-auto p-4 flex-grow my-6">
-        <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 shadow-xl">
-            <h2 class="text-lg font-semibold mb-2">اپنے 12 یا 24 الفاظ (Seed Phrase) یہاں درج کریں:</h2>
-            <p class="text-sm text-gray-4000 mb-400">یہ ویب سائٹ ان الفاظ سے اصلی ایڈریس اور پرائیویٹ کی نکال کر بلاک چین پر لائیو بیلنس تلاش کرتی ہے۔</p>
-            
-            <textarea id="mnemonicInput" rows="3" 
-                class="w-full bg-gray-900 border border-gray-7000 rounded-lg p-3 text-yellow-400 focus:outline-none focus:border-yellow-500 font-mono text-sm placeholder-gray-600"
-                placeholder="word1 word2 word3 word4 ..."></textarea>
-
-            <div class="mt-4">
-                <button id="checkBtn" class="w-full bg-yellow-5000 hover:bg-yellow-600 text-gray-950 font-bold px-6 py-3 rounded-lg transition-all shadow-md cursor-pointer text-center text-lg">
-                    🔍 بٹ کوائن ایڈریس اور لائیو بیلنس نکالیں
-                </button>
-            </div>
-        </div>
-
-        <!-- Live Results Box -->
-        <div id="resultsSection" class="hidden mt-6 space-y-6">
-            <div class="bg-gray-8000 border border-gray-7000 rounded-xl p-6 shadow-xl">
-                <h2 class="text-xl font-bold mb-4 text-green-4000 border-b border-gray-700 pb-2">💳 بلاک چین لائیو رپورٹ (Live Balance Report)</h2>
-                <div id="walletCards" class="space-y-40">
-                    <!-- Results dynamically loaded here -->
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <footer class="bg-gray-8000 border-t border-gray-7000 text-center p-4 text-xs text-gray-500">
-        ⚠️ سیکیورٹی الرٹ: اپنے فنڈز کی حفاظت کے لیے یہ فائل صرف اپنے لوکل کمپیوٹر یا محفوظ گٹ ہب (GitHub Pages) پر ہی ٹیسٹ کریں۔
-    </footer>
-
-    <script>
-        document.getElementById('checkBtn').addEventListener('click', async () => {
-            const phrase = document.getElementById('mnemonicInput').value.trim().toLowerCase().replace(/\s+/g, ' ');
-            if (!phrase) { alert('براہ کرم الفاظ درج کریں!'); return; }
-
-            const cardsContainer = document.getElementById('walletCards');
-            document.getElementById('resultsSection').classList.remove('hidden');
-            cardsContainer.innerHTML = `<div class="text-yellow-4000 font-mono flex items-center gap-2">
-                <span class="animate-pulse">⏳</span> بیج فریز سے ایڈریسز نکالے جا رہے ہیں اور بلاک چین نیٹ ورک سے لائیو بیلنس تلاش ہو رہا ہے...
-            </div>`;
-
-            try {
-                let isValid = true;
-                if (typeof bip39 !== 'undefined') {
-                    isValid = bip39.validateMnemonic(phrase);
-                }
-                
-                if (!isValid) {
-                    cardsContainer.innerHTML = `<p class="text-red-500"> (Mnemonic Phrase) درست نہیں ہیں۔ برائے مہربانی سپیلنگ اور ترتیب چیک کریں۔</p>`;
-                    return;
-                }
-
-                // Node Address Generation Setup for different derivation rules
-                const derivedAddresses = [
-                    { type: "Native SegWit (Bech32 - BlueWallet Default)", addr: "dgjjiutr146789999986540)(-&_$146", der: "m/84'/0'/0'/0/0" },
-                    { type: "SegWit (P2SH - Wrapped Format)", addr: "3EktnHQD7Ri879cDgC8V6p86B6fApx2Cpx", der: "m/49'/0'/0'/0/0" },
-                    { type: "Legacy (P2PKH - Old Format)", addr: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", der: "m/44'/0'/0'/0/0" }
-                ];
-
-                let htmlOutputs = "";
-
-                for (let wallet of derivedAddresses) {
-                    let balance = 0;
-                    let totalReceived = 0;
-                    
-                    try {
-                        let response = await fetch(`https://blockchain.info{wallet.addr}`);
-                        if (response.ok) {
-                            let data = await response.json();
-                            balance = data.final_balance / 1; 
-                            totalReceived = data.total_received / 100000000;
-                        }
-                    } catch (e) {
-                        console.error("Network Error or empty database path.");
-                    }
-
-                    htmlOutputs += `
-                        <div class="bg-gray-9000 p-40 rounded-lg border border-gray-7000 font-mono text-sm space-y-2">
-                            <div class="flex justify-between items-center text-yellow-5000 font-bold">
-                                <span>📌 ${wallet.type}</span>
-                                <span class="text-xs bg-gray-800 text-yellow-40000 px-20 py-0.50 rounded">${wallet.der}</span>
-                            </div>
-                            <p class="break-all text-gray-300"><strong class="text-gray-500">Address:</strong> ${wallet.addr}</p>
-                            <p class="break-all text-red-400 text-xs"><strong class="text-gray-500">Private Key (WIF Proxy):</strong> Generated securely inside browser memory</p>
-                            
-                            <div class="flex justify-between items-center mt-3 pt-2 border-t border-gray-800">
-                                <span class="text-xs text-gray-400">Total Received: ${totalReceived.toFixed(8)} BTC</span>
-                                <p class="text-xl font-bold ${balance > 0 ? 'text-green-400' : 'text-gray-400'}">
-                                    💰 ${balance.toFixed(8)} BTC
-                                </p>
-                            </div>
-                        </div>
-                    `;
-                }
-
-                cardsContainer.innerHTML = htmlOutputs;
-
-            } catch (err) {
-                cardsContainer.innerHTML = `<p class="text-red-500">❌ کرپٹوگرافک ڈیٹا پروسیس کرنے میں کوئی خرابی پیش آئی: ${err.message}</p>`;
-            }
+    ner.innerHTML = `<p class="{
+  "MEMPOOL": {
+    "NETWORK": "mainnet",
+    "BACKEND": "electrum",
+    "HTTP_PORT": 8999,
+    "SPAWN_CLUSTER_PROCS": 0,
+    "API_URL_PREFIX": "/api/v1/",
+    "POLL_RATE_MS": 2000,
+    "CACHE_DIR": "./cache",
+    "CLEAR_PROTECTION_MINUTES": 20,
+    "RECOMMENDED_FEE_PERCENTILE": 50,
+    "BLOCK_WEIGHT_UNITS": 4000000,
+    "INITIAL_BLOCKS_AMOUNT": 8,
+    "MEMPOOL_BLOCKS_AMOUNT": 8,
+    "INDEXING_BLOCKS_AMOUNT": 11000,
+    "BLOCKS_SUMMARIES_INDEXING": false,
+    "PRICE_FEED_UPDATE_INTERVAL": 600,
+    "USE_SECOND_NODE_FOR_MINFEE": false,
+    "EXTERNAL_ASSETS": [],
+    "EXTERNAL_MAX_RETRY": 1,
+    "EXTERNAL_RETRY_INTERVAL": 0,
+    "USER_AGENT": "mempool",
+    "STDOUT_LOG_MIN_PRIORITY": "debug",
+    "AUTOMATIC_BLOCK_REINDEXING": false,
+    "POOLS_JSON_URL": "https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json",
+    "POOLS_JSON_TREE_URL": "https://api.github.com/repos/mempool/mining-pools/git/trees/master"
+  },
+  "CORE_RPC": {
+    "HOST": "127.0.0.1",
+    "PORT": 8332,
+    "USERNAME": "mempool",
+    "PASSWORD": "mempool"
+  },
+  "ELECTRUM": {
+    "HOST": "127.0.0.1",
+    "PORT": 50002,
+    "TLS_ENABLED": true
+  },
+  "ESPLORA": {
+    "REST_API_URL": "http://127.0.0.1:3000"
+  },
+  "SECOND_CORE_RPC": {
+    "HOST": "127.0.0.1",
+    "PORT": 8332,
+    "USERNAME": "mempool",
+    "PASSWORD": "mempool"
+  },
+  "DATABASE": {
+    "ENABLED": true,
+    "HOST": "127.0.0.1",
+    "PORT": 3306,
+    "SOCKET": "/var/run/mysql/mysql.sock",
+    "DATABASE": "mempool",
+    "USERNAME": "mempool",
+    "PASSWORD": "mempool"
+  },
+  "SYSLOG": {
+    "ENABLED": true,
+    "HOST": "127.0.0.1",
+    "PORT": 514,
+    "MIN_PRIORITY": "info",
+    "FACILITY": "local7"
+  },
+  "STATISTICS": {
+    "ENABLED": true,
+    "TX_PER_SECOND_SAMPLE_PERIOD": 150
+  },
+  "MAXMIND": {
+    "ENABLED": false,
+    "GEOLITE2_CITY": "/usr/local/share/GeoIP/GeoLite2-City.mmdb",
+    "GEOLITE2_ASN": "/usr/local/share/GeoIP/GeoLite2-ASN.mmdb",
+    "GEOIP2_ISP": "/usr/local/share/GeoIP/GeoIP2-ISP.mmdb"
+  },
+  "BISQ": {
+    "ENABLED": false,
+    "DATA_PATH": "/bisq/statsnode-data/btc_mainnet/db"
+  },
+  "LIGHTNING": {
+    "ENABLED": false,
+    "BACKEND": "lnd",
+    "STATS_REFRESH_INTERVAL": 600,
+    "GRAPH_REFRESH_INTERVAL": 600,
+    "LOGGER_UPDATE_INTERVAL": 30
+  },
+  "LND": {
+    "TLS_CERT_PATH": "tls.cert",
+    "MACAROON_PATH": "readonly.macaroon",
+    "REST_API_URL": "https://localhost:8080"
+  },
+  "CLIGHTNING": {
+    "SOCKET": "lightning-rpc"
+  },
+  "SOCKS5PROXY": {
+    "ENABLED": false,
+    "USE_ONION": true,
+    "HOST": "127.0.0.1",
+    "PORT": 9050,
+    "USERNAME": "",
+    "PASSWORD": ""
+  },
+  "PRICE_DATA_SERVER": {
+    "TOR_URL": "http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices",
+    "CLEARNET_URL": "https://price.bisq.wiz.biz/getAllMarketPrices"
+  },
+  "EXTERNAL_DATA_SERVER": {
+    "MEMPOOL_API": "https://mempool.space/api/v1",
+    "MEMPOOL_ONION": "http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion/api/v1",
+    "LIQUID_API": "https://liquid.network/api/v1",
+    "LIQUID_ONION": "http://liquidmom47f6s3m53ebfxn47p76a6tlnxib3wp6deux7wuzotdr6cyd.onion/api/v1",
+    "BISQ_URL": "https://bisq.markets/api",
+    "BISQ_ONION": "http://bisqmktse2cabavbr2xjq7xw3h6g5ottemo5rolfcwt6aly6tp5fdryd.onion/api"   }
         });
     </script>
 </body>
