@@ -3,7 +3,7 @@ import ecdsa
 
 # ==== APNA FAVORITE YAHAN LIKHO ====
 # Sirf 4 ya 5 lafz likho, pura mat likho warna nahi chalega
-TARGET = "198aMn6ZYAczwrE5NvNTUMyJ5qkfy4g3"
+TARGET = "A1A11"
 # ===================================
 
 def get_address(priv_hex):
@@ -25,5 +25,5 @@ while True:
         print("Private Key:", priv)
         print(f"{c} try me mila")
         break
-    if c % 100000000000000000000 == 0:
+    if c % 1000 == 0:
         print(c, "check kiya ->", addr)
