@@ -1,55 +1,29 @@
-import os
-import hashlib
-import time
+import os, hashlib, time
 import ecdsa
-import base58
 
-# ===== YAHAN APNA FAVORITE LIKHO =====
-TARGET = "A1A11"  # Aapka favorite, jaise A1A786
-# =====================================
+# ==== APNA FAVORITE YAHAN LIKHO ====
+# Sirf 4 ya 5 lafz likho, pura mat likho warna nahi chalega
+TARGET = "198aMn6ZYAczwrE5NvNTUMyJ5qkfy4g3"
+# ===================================
 
-def private_key_to_address(private_key_hex):
-    private_bytes = bytes.fromhex(private_key_hex)
-    # 2009 wala ECDSA
-    sk = ecdsa.SigningKey.from_string(private_bytes, curve=ecdsa.SECP256k1)
-    vk = sk.verifying_key
-    public_key = b'\x04' + vk.to_string()
-    sha256 = hashlib.sha256(public_key).digest()
-    ripemd = hashlib.new('ripemd160', sha256).digest()
-    # A1A Address
-    address = "A1A" + ripemd.hex()[:30].upper()
-    return address
+def get_address(priv_hex):
+    sk = ecdsa.SigningKey.from_string(bytes.fromhex(priv_hex), curve=ecdsa.SECP256k1)
+    pub = b'\x04' + sk.verifying_key.to_string()
+    h = hashlib.new('ripemd160', hashlib.sha256(pub).digest()).hexdigest()
+    return "A1A" + h[:20].upper()
 
-def private_key_to_wif(private_key_hex):
-    # Old 2009 WIF format - 5 se start hota hai
-    extended = b'\x80' + bytes.fromhex(private_key_hex)
-    sha1 = hashlib.sha256(extended).digest()
-    sha2 = hashlib.sha256(sha1).digest()
-    checksum = sha2[:4]
-    wif = base58.b58encode(extended + checksum)
-    return wif.decode()
+print(f"Dhoondh raha hun: {TARGET} ...")
 
-print(f"2009 Style Generator - Target: {TARGET}")
-print("Ye 12 words nahi hai, ye asal private key hai...\n")
-
-count = 0
-start = time.time()
+c=0
 while True:
-    count += 1
-    # 2009 me random 32 byte private key banta tha
-    priv_hex = os.urandom(32).hex()
-    addr = private_key_to_address(priv_hex)
-
+    c+=1
+    priv = os.urandom(32).hex()
+    addr = get_address(priv)
     if addr.startswith(TARGET):
-        wif = private_key_to_wif(priv_hex)
-        print(f"\n====== MIL GAYA OLD STYLE ME ======")
-        print(f"Address (A1A): {addr}")
-        print(f"Private Key (Hex): {priv_hex}")
-        print(f"Private Key (WIF - 2009 Style): {wif}")
-        print(f"Try: {count} | Time: {int(time.time()-start)} sec")
-        print(f"===================================")
-        print("\nYe WIF ko aap Core Wallet me import kar sakte ho. Isi pe payment ayegi aur system pe record hoga.")
+        print("\nMIL GAYA BHAI!")
+        print("Address:", addr)
+        print("Private Key:", priv)
+        print(f"{c} try me mila")
         break
-
-    if count % 1000 == 0:
-        print(f"{count} checked... {addr}")
+    if c % 100000000000000000000 == 0:
+        print(c, "check kiya ->", addr)
